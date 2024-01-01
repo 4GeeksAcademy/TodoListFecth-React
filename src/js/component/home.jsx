@@ -1,14 +1,20 @@
 import React, { useState, useEffect } from "react";
 
 const Home = () => {
-  const [valueInput, setValueInput] = useState('Tarea nueva');
+  const [valueInput, setValueInput] = useState('');
   const [toBeDone, setToBeDone] = useState([]);
 
   const API_URL = "https://playground.4geeks.com/apis/fake/todos/user/spirosis";
 
+  let getMethod = {
+    method: "GET",
+    headers: {
+      "Content-Type" : "application/json"
+    }
+  }
   useEffect(() => {
     // Load tasks from the API when the component mounts
-    fetch(API_URL)
+    fetch(API_URL, getMethod)
       .then(response => {
         if (response.status >= 200 && response.status < 300) {
           console.log('request went through');
@@ -20,6 +26,7 @@ const Home = () => {
       })
       .then(data => {
         setToBeDone(data);
+        console.log(data);
       })
       .catch(error => console.error('Error fetching data:', error));
   }, []); // Empty dependency array to run once when component mounts
@@ -33,47 +40,56 @@ const Home = () => {
         label: valueInput,
         done: false,
       };
-
+  
       // Use the spread operator to update state immutably
-      // setToBeDone(prevState => [taskObject, ...prevState]);
-      const updatedState = [taskObject, ...prevState];
-
+      setToBeDone(prevState => [taskObject, ...prevState]);
+  
       // Reset the input field
       setValueInput('');
 
-      // Save tasks to the API
-      fetch(API_URL, {
-        method: "POST",
-        body: JSON.stringify(updatedState),
+      //set method and body to use in fetch
+      let putMethod = {
+        method: "PUT",
+        body: JSON.stringify(toBeDone),
         headers: {
-          "Content-Type": "application/json",
-        },
-      })
+          "Content-Type" : "application/json"
+        }
+      }
+
+      // Save tasks to the API using an empty array in the request body
+      fetch(API_URL, putMethod)
         .then(response => {
           if (response.status >= 200 && response.status < 300) {
             console.log('Data saved successfully');
             return response.json();
           } else {
             console.log(`Error ${response.status} in request`);
-            throw new Error("Failed to save data");
+            return response.text().then(errorText => {
+              console.error('API error:', errorText);
+              throw new Error("Failed to save data");
+            });
           }
         })
         .catch(error => console.error('Error saving data:', error));
     }
   };
+  
 
   const deleteTask = (taskIndex) => {
     // Use the spread operator to update state immutably
     setToBeDone(prevState => prevState.filter((_, i) => i !== taskIndex));
 
+    let deleteMethod = {
+        method: "PUT",
+        body: JSON.stringify(toBeDone),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+
+    
     // Save tasks to the API
-    fetch(API_URL, {
-      method: "PUT",
-      body: JSON.stringify(toBeDone),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
+    fetch(API_URL, deleteMethod)
       .then(response => {
         if (response.status >= 200 && response.status < 300) {
           console.log('Data saved successfully');
@@ -85,6 +101,8 @@ const Home = () => {
       })
       .catch(error => console.error('Error saving data:', error));
   };
+
+  
 
   return (
     <div className='list'>
