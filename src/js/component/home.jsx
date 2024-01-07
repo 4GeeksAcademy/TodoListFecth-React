@@ -115,7 +115,11 @@ const Home = () => {
                 onChange={(e) => setValueInput(e.target.value)}
                 onKeyDown= {addTask}
               />
-              <button onClick= {addTask} >+</button>
+              <button 
+                id="newtask-button"
+                onClick= {addTask} >
+                +
+              </button>
           
           <ul id="tasks">
             <div>
@@ -125,8 +129,10 @@ const Home = () => {
                 className="task"
                 key={index}>
                 {task.label}
-                <button onClick={() => deleteTask(task.id)}>
-                &#x2715;
+                <button 
+                  id='delete-button'
+                  onClick={() => deleteTask(task.id)}>
+                  &#x2715;
                 </button>
               </li>
             ))}
