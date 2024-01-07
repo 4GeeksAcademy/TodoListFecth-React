@@ -13,7 +13,7 @@ const Home = () => {
   useEffect(() =>{
     getTasks()
     setTaskCont(localList.length)
-  })
+  }, [toBeDone])
 
   const addTask = async (e) => {
     try {
@@ -101,24 +101,29 @@ const Home = () => {
   };
 
   return (
-    <div className='list container-fluid'>
+    <div className='list container-fluid bg-light '>
       <div>
-        <h1>Task Manager Quantico</h1>
-          <ul>
-            <li>
+        <h1 className="title container-fluid text-center">
+          Task Manager Quantico
+        </h1>
+          <div className="input-container text-center">
               <input
+                id="newtask"
                 type="text"
                 placeholder="whats for today?"
                 value={valueInput}
                 onChange={(e) => setValueInput(e.target.value)}
                 onKeyDown= {addTask}
               />
-              <button onClick={addTask}>+</button>
-            </li>
+              <button onClick= {addTask} >+</button>
+          
+          <ul id="tasks">
             <div>
 
             {toBeDone.map((task, index) => (
-              <li key={index}>
+              <li 
+                className="task"
+                key={index}>
                 {task.label}
                 <button onClick={() => deleteTask(task.id)}>
                 &#x2715;
@@ -129,6 +134,7 @@ const Home = () => {
             </div>
           </ul>
         <div className="taskCont">{taskCont} Items left</div>
+          </div>
       </div>
     </div>
   );
